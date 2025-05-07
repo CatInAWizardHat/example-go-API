@@ -21,3 +21,13 @@ func (m *Message) GetMessages(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, messages)
 }
 
+func (m *Message) GetMessage(c *gin.Context) {
+	id := c.Param("id")
+	for _, message := range messages {
+		if message.ID == id {
+			c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data": message})
+			return
+		}
+	}
+	c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": "Message not found."})
+}
