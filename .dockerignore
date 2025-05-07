@@ -3,6 +3,3 @@ bin/
 
 # Git metadata
 .git/
-
-# Sensitive environment variables
-*.env
