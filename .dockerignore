@@ -5,4 +5,4 @@ bin/
 .git/
 
 # Sensitive environment variables
-.env
+*.env
