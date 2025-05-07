@@ -1,21 +1,13 @@
 package main
 
-import (
-	"net/http"
-	"log"
-
-	"github.com/gin-gonic/gin"
+import (	
+	"github.com/gin-gonic/gin"	
+	"example-message-api/services"
 )
 
 func main() {
-	r := gin.Default()
-
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-		log.Print("Successful GET Request.")
-	})
-
-	r.Run("localhost:8080")
+	messages := &services.Message{}
+	  r := gin.Default()
+	  r.GET("/messages", messages.GetMessages)
+	  r.Run("localhost:8080")
 }
