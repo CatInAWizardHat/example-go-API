@@ -8,15 +8,14 @@ import (
 )
 
 func main() {
-	r, err := gin.Default()
-	if err != nil {
-		fmt.Println("Error: ", err)
-		return
-	}
+	r := gin.Default()
+
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",
 		})
+		log.Print("Successful GET Request.")
 	})
-	r.Run()
+
+	r.Run("localhost:8080")
 }
