@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-
+// Message struct
 type Message struct {
 	ID	string	`json:"id"`
 	User	string	`json:"user"`
@@ -22,12 +22,15 @@ func (m *Message) GetMessages(c *gin.Context) {
 }
 
 func (m *Message) GetMessage(c *gin.Context) {
+	// Get id from url params
 	id := c.Param("id")
 	for _, message := range messages {
 		if message.ID == id {
+			// If found, return 200 and the message
 			c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data": message})
 			return
 		}
 	}
+	// If not found, return 404
 	c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": "Message not found."})
 }
