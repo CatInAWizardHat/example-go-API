@@ -52,7 +52,7 @@ func (m *Message) UpdateMessage(c *gin.Context) {
 	id := c.Param("id")
 	for _, message := range messages {
 		if message.ID == id {
-			message.Text = c.Params("text")
+			message.Text = c.Param("text")
 			c.JSON(http.StatusNoContent, gin.H{"status": http.StatusNoContent})
 			return
 		}
