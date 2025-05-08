@@ -28,6 +28,8 @@ func main() {
 	  r := gin.Default()
 	  r.GET("/messages", messages.GetMessages)
 	  r.GET("/messages/:id", messages.GetMessage)
+	  r.POST("/messages", messages.CreateMessage)
+	  r.PATCH("/messages", messages.UpdateMessage)
 
 	if err := r.Run(hostname); err != nil {
 	    log.Fatalf("Error, failed to start server: %s", err)

@@ -45,5 +45,17 @@ func (m *Message) CreateMessage(c *gin.Context) {
 		return
 	}
 	messages = append(messages, newMessage)
-	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data": newMessage})
+	c.JSON(http.StatusCreated, gin.H{"status": http.StatusCreated, "data": newMessage})
+}
+
+func (m *Message) UpdateMessage(c *gin.Context) {
+	id := c.Params("id")
+	for _, message := range messages {
+		if message.ID == id {
+			message.Text = c.Params("text")
+			c.JSON(http.StatusNoContent, gin.H{"status": http.StatusNoContent})
+			return
+		}
+	}
+	c.JSON(http.StatusNotFoud, gin.H{"status": http.StatusNotFound, "message": "Message not found."})
 }
