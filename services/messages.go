@@ -49,7 +49,7 @@ func (m *Message) CreateMessage(c *gin.Context) {
 }
 
 func (m *Message) UpdateMessage(c *gin.Context) {
-	id := c.Params("id")
+	id := c.Param("id")
 	for _, message := range messages {
 		if message.ID == id {
 			message.Text = c.Params("text")
@@ -57,5 +57,8 @@ func (m *Message) UpdateMessage(c *gin.Context) {
 			return
 		}
 	}
-	c.JSON(http.StatusNotFoud, gin.H{"status": http.StatusNotFound, "message": "Message not found."})
+	c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": "Message not found."})
+}
+
+func (m *Message) DeleteMessage(c *gin.Context) {
 }
