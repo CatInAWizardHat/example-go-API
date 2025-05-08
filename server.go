@@ -12,8 +12,7 @@ import (
 
 func main() {
 	// Load .env file to make it accessible
-	err := godotenv.Load()
-	if err != nil {
+	if err := godotenv.Load(); err != nil {
 		log.Fatalf("Error, failed to load .env: %s", err)
 	}
 
@@ -30,8 +29,7 @@ func main() {
 	  r.GET("/messages", messages.GetMessages)
 	  r.GET("/messages/:id", messages.GetMessage)
 
-	  err = r.Run(hostname)
-	  if err != nil {
+	if err := r.Run(hostname); err != nil {
 	    log.Fatalf("Error, failed to start server: %s", err)
-	  }
+	}
 }

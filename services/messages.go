@@ -2,6 +2,8 @@ package services
 
 import (
 	"net/http"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -33,4 +35,15 @@ func (m *Message) GetMessage(c *gin.Context) {
 	}
 	// If not found, return 404
 	c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": "Message not found."})
+}
+
+func (m *Message) CreateMessage(c *gin.Context) {
+	var newMessage Message
+	newMessage.ID = strconv.Itoa(len(messages) + 1)
+	if err := c.BindJSON(&newMessage); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": err.Error()})
+		return
+	}
+	messages = append(messages, newMessage)
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data": newMessage})
 }
