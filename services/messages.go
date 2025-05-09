@@ -52,6 +52,7 @@ func (m *Message) UpdateMessage(c *gin.Context) {
 	id := c.Param("id")
 	for idx, message := range messages {
 		if message.ID == id {
+			// Create new message to be added to the list
 			var updatedMessage Message
 			if err := c.BindJSON(&updatedMessage); err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": err.Error()})
@@ -70,6 +71,7 @@ func (m *Message) DeleteMessage(c *gin.Context) {
 	id := c.Param("id")
 	for idx, message := range messages {
 		if message.ID == id {
+			// Code that I found on Stack Overflow
 			messages = append(messages[:idx], messages[idx+1:]...)
 			c.JSON(http.StatusNoContent, gin.H{"status": http.StatusNoContent})
 			return
