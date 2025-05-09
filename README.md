@@ -13,4 +13,4 @@ Run with
 
 and access in the browser via 
 
-```localhost:8080```
+```localhost:8080/messages```
