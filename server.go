@@ -29,7 +29,8 @@ func main() {
 	  r.GET("/messages", messages.GetMessages)
 	  r.GET("/messages/:id", messages.GetMessage)
 	  r.POST("/messages", messages.CreateMessage)
-	  r.PATCH("/messages", messages.UpdateMessage)
+	  r.PATCH("/messages/:id", messages.UpdateMessage)
+	  r.DELETE("/messages/:id", messages.DeleteMessage)
 
 	if err := r.Run(hostname); err != nil {
 	    log.Fatalf("Error, failed to start server: %s", err)

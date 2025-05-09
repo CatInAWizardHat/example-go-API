@@ -2,6 +2,7 @@ package services
 
 import (
 	"net/http"
+	"slices"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -9,7 +10,7 @@ import (
 
 // Message struct
 type Message struct {
-	ID	string	`json:"id"`
+	ID		string	`json:"id"`
 	User	string	`json:"user"`
 	Text	string	`json:"text"`
 }
@@ -50,9 +51,15 @@ func (m *Message) CreateMessage(c *gin.Context) {
 
 func (m *Message) UpdateMessage(c *gin.Context) {
 	id := c.Param("id")
-	for _, message := range messages {
+	for idx, message := range messages {
 		if message.ID == id {
-			message.Text = c.Param("text")
+			var updatedMessage Message
+			if err := c.BindJSON(&updatedMessage); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"status": http.StatusBadRequest, "message": err.Error()})
+				return
+			}
+			updatedMessage.ID = id
+			messages[idx] = updatedMessage
 			c.JSON(http.StatusNoContent, gin.H{"status": http.StatusNoContent})
 			return
 		}
@@ -61,4 +68,13 @@ func (m *Message) UpdateMessage(c *gin.Context) {
 }
 
 func (m *Message) DeleteMessage(c *gin.Context) {
+	id := c.Param("id")
+	for idx, message := range messages {
+		if message.ID == id {
+			messages = slices.Delete(messages, idx, idx) 
+			c.JSON(http.StatusNoContent, gin.H{"status": http.StatusNoContent})
+			return
+		}
+	}
+	c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": "Message not found."})
 }
