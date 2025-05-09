@@ -2,7 +2,6 @@ package services
 
 import (
 	"net/http"
-	"slices"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -71,7 +70,7 @@ func (m *Message) DeleteMessage(c *gin.Context) {
 	id := c.Param("id")
 	for idx, message := range messages {
 		if message.ID == id {
-			messages = slices.Delete(messages, idx, idx) 
+			messages = append(messages[:idx], messages[idx+1:]...)
 			c.JSON(http.StatusNoContent, gin.H{"status": http.StatusNoContent})
 			return
 		}
