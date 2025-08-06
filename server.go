@@ -23,11 +23,9 @@ func main() {
 	// Generate hostname for Gin router
 	hostname := fmt.Sprintf("%s:%s", host, port)
 
-	messageDB := &types.MemoryStore{}
+	messageDB := types.NewMemoryStore()
 	// Create operator for the endpoints
-	messages := &services.MessageHandler{
-		Store: messageDB,
-	}
+	messages := services.NewMessageHandler(messageDB)
 	// Create router
 	r := gin.Default()
 	r.GET("/messages", messages.GetMessages)
