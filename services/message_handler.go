@@ -16,7 +16,7 @@ type MessageHandler struct {
 }
 
 func (h *MessageHandler) GetMessages(c *gin.Context) {
-	messages := h.Store.GetMessages()
+	messages, _ := h.Store.GetMessages()
 	c.JSON(http.StatusOK, messages)
 }
 
@@ -33,11 +33,11 @@ func (h *MessageHandler) GetMessage(c *gin.Context) {
 func (h *MessageHandler) CreateMessage(c *gin.Context) {
 	var message Message
 	if err := c.ShouldBindJSON(&message); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := h.Store.CreateMessage(message); err != nil {
+	if err := h.Store.CreateMessage(&message); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -49,7 +49,7 @@ func (h *MessageHandler) UpdateMessage(c *gin.Context) {
 	id := c.Param("id")
 	var message Message
 	if err := c.ShouldBindJSON(&message); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
