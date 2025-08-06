@@ -86,8 +86,11 @@ func (m *MemoryStore) DeleteMessage(id string) error {
 }
 
 func validateMessage(message *Message) error {
-	if message.User == "" || message.Text == "" {
-		return errors.New("user and text cannot be empty")
+	if message.User == "" {
+		return errors.New("user cannot be empty")
+	}
+	if message.Text == "" {
+		return errors.New("text cannot be empty")
 	}
 	if len(message.Text) > 500 {
 		return errors.New("text cannot exceed 500 characters")
