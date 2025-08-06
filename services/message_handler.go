@@ -15,8 +15,18 @@ type MessageHandler struct {
 	Store MessageStore
 }
 
+func NewMessageHandler(store MessageStore) *MessageHandler {
+	return &MessageHandler{
+		Store: store,
+	}
+}
+
 func (h *MessageHandler) GetMessages(c *gin.Context) {
-	messages, _ := h.Store.GetMessages()
+	messages, err := h.Store.GetMessages()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, messages)
 }
 
