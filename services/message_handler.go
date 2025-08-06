@@ -34,7 +34,11 @@ func (h *MessageHandler) GetMessage(c *gin.Context) {
 	id := c.Param("id")
 	message, err := h.Store.GetMessage(id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		if err.Error() == "message not found" {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
 		return
 	}
 	c.JSON(http.StatusOK, message)
@@ -64,8 +68,13 @@ func (h *MessageHandler) UpdateMessage(c *gin.Context) {
 	}
 
 	if err := h.Store.UpdateMessage(id, &message); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-		return
+		if err.Error() == "message not found" {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 	}
 
 	c.JSON(http.StatusOK, message)
