@@ -1,12 +1,13 @@
 package main
 
-import (	
-	"fmt"
-	"os"
-	"log"
+import (
 	"example-message-api/services"
+	"example-message-api/types"
+	"fmt"
+	"log"
+	"os"
 
-	"github.com/gin-gonic/gin"	
+	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
 
@@ -22,17 +23,20 @@ func main() {
 	// Generate hostname for Gin router
 	hostname := fmt.Sprintf("%s:%s", host, port)
 
+	messageDB := &types.MemoryStore{}
 	// Create operator for the endpoints
-	messages := &services.Message{}
-	  // Create router
-	  r := gin.Default()
-	  r.GET("/messages", messages.GetMessages)
-	  r.GET("/messages/:id", messages.GetMessage)
-	  r.POST("/messages", messages.CreateMessage)
-	  r.PATCH("/messages/:id", messages.UpdateMessage)
-	  r.DELETE("/messages/:id", messages.DeleteMessage)
+	messages := &services.MessageHandler{
+		Store: messageDB,
+	}
+	// Create router
+	r := gin.Default()
+	r.GET("/messages", messages.GetMessages)
+	r.GET("/messages/:id", messages.GetMessage)
+	r.POST("/messages", messages.CreateMessage)
+	r.PATCH("/messages/:id", messages.UpdateMessage)
+	r.DELETE("/messages/:id", messages.DeleteMessage)
 
 	if err := r.Run(hostname); err != nil {
-	    log.Fatalf("Error, failed to start server: %s", err)
+		log.Fatalf("Error, failed to start server: %s", err)
 	}
 }
