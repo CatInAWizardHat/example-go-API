@@ -11,7 +11,7 @@ import (
 func TestMemoryStore_NewMemoryStore(t *testing.T) {
 	store := NewMemoryStore()
 	assert.NotNil(t, store)
-	assert.Empty(t, &store.messages)
+	assert.Empty(t, store.messages)
 	assert.NotNil(t, &store.mutex)
 }
 
@@ -162,7 +162,6 @@ func TestMemoryStore_UpdateMessage_Validation(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			store := NewMemoryStore()
 			err := store.UpdateMessage(tc.id, tc.inputMessage)
 			assert.Error(t, err)
 			assert.Equal(t, tc.expectedError, err)
