@@ -167,7 +167,10 @@ func TestMemoryStore_UpdateMessage_Validation(t *testing.T) {
 			assert.Equal(t, tc.expectedError, err)
 			messages, err := store.GetMessages()
 			assert.NoError(t, err)
-			assert.Empty(t, messages)
+			assert.Equal(t, len(messages), 1)
+			assert.Equal(t, message.ID, messages[0].ID)
+			assert.Equal(t, message.User, messages[0].User)
+			assert.Equal(t, message.Text, messages[0].Text)
 		})
 	}
 }
