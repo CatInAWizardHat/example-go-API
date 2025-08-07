@@ -7,6 +7,13 @@ import (
 	"github.com/google/uuid"
 )
 
+var (
+	ErrMessageNotFound = errors.New("message not found")
+	ErrUserEmpty       = errors.New("user cannot be empty")
+	ErrTextEmpty       = errors.New("text cannot be empty")
+	ErrTextTooLong     = errors.New("text cannot exceed 500 characters")
+)
+
 // Message struct
 type Message struct {
 	ID   uuid.UUID `json:"id"`
@@ -40,7 +47,7 @@ func (m *MemoryStore) GetMessage(id string) (Message, error) {
 		}
 	}
 
-	return Message{}, errors.New("message not found")
+	return Message{}, ErrMessageNotFound
 }
 
 func (m *MemoryStore) CreateMessage(message *Message) error {
@@ -68,7 +75,7 @@ func (m *MemoryStore) UpdateMessage(id string, updatedMessage *Message) error {
 			return nil
 		}
 	}
-	return errors.New("message not found")
+	return ErrMessageNotFound
 }
 
 func (m *MemoryStore) DeleteMessage(id string) error {
@@ -82,18 +89,18 @@ func (m *MemoryStore) DeleteMessage(id string) error {
 			return nil
 		}
 	}
-	return errors.New("message not found")
+	return ErrMessageNotFound
 }
 
 func validateMessage(message *Message) error {
 	if message.User == "" {
-		return errors.New("user cannot be empty")
+		return ErrUserEmpty
 	}
 	if message.Text == "" {
-		return errors.New("text cannot be empty")
+		return ErrTextEmpty
 	}
 	if len(message.Text) > 500 {
-		return errors.New("text cannot exceed 500 characters")
+		return ErrTextTooLong
 	}
 	return nil
 }
