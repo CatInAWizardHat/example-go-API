@@ -83,8 +83,7 @@ func (m *MemoryStore) DeleteMessage(id string) error {
 	defer m.mutex.Unlock()
 	for idx, message := range m.messages {
 		if message.ID.String() == id {
-			// Code that I found on Stack Overflow
-			// to remove an element from a slice
+			// Re-slice the array to remove the message
 			m.messages = append(m.messages[:idx], m.messages[idx+1:]...)
 			return nil
 		}
