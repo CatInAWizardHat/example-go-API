@@ -15,6 +15,21 @@ func TestMemoryStore_NewMemoryStore(t *testing.T) {
 	assert.NotNil(t, &store.mutex)
 }
 
+func TestMemoryStore_GetMessage_AfterCreation(t *testing.T) {
+	store := NewMemoryStore()
+	message := &Message{
+		User: "testuser",
+		Text: "This is a test message",
+	}
+	err := store.CreateMessage(message)
+	assert.NoError(t, err)
+	retrievedMessage, err := store.GetMessage(message.ID.String())
+	assert.NoError(t, err)
+	assert.Equal(t, message.User, retrievedMessage.User)
+	assert.Equal(t, message.Text, retrievedMessage.Text)
+	assert.Equal(t, message.ID, retrievedMessage.ID)
+}
+
 func TestMemoryStore_GetMessages_Empty(t *testing.T) {
 	store := NewMemoryStore()
 	messages, err := store.GetMessages()
