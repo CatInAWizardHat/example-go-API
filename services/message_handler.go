@@ -89,10 +89,6 @@ func (h *MessageHandler) UpdateMessage(c *gin.Context) {
 func (h *MessageHandler) DeleteMessage(c *gin.Context) {
 	id := c.Param("id")
 	if err := h.Store.DeleteMessage(id); err != nil {
-		if errors.Is(err, types.ErrUserEmpty) || errors.Is(err, types.ErrTextEmpty) || errors.Is(err, types.ErrTextTooLong) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
 		if errors.Is(err, types.ErrMessageNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			return
