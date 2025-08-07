@@ -3,7 +3,8 @@ package types
 import (
 	"testing"
 
-	"github.com/google/uuid"
+	"strings"
+
 	assert "github.com/stretchr/testify/assert"
 )
 
@@ -46,50 +47,37 @@ func TestMemoryStore_CreateMessage_Valid(t *testing.T) {
 	assert.Equal(t, message.Text, messages[0].Text)
 }
 
-func TestMemoryStore_CreateMessage_Invalid_NoUser(t *testing.T) {
-	store := NewMemoryStore()
-	message := &Message{
-		User: "", // Invalid user
-		Text: "This is a test message",
+func TestMemoryStore_CreateMessage_Validation(t *testing.T) {
+	testCases := []struct {
+		name          string
+		inputMessage  *Message
+		expectedError error
+	}{
+		{
+			name:          "Invalid_NoUser",
+			inputMessage:  &Message{User: "", Text: "This is a test message"},
+			expectedError: ErrUserEmpty,
+		},
+		{
+			name:          "Invalid_NoText",
+			inputMessage:  &Message{User: "testuser", Text: ""},
+			expectedError: ErrTextEmpty,
+		},
+		{
+			name:          "Invalid_TextTooLong",
+			inputMessage:  &Message{User: "testuser", Text: strings.Repeat("a", 501)},
+			expectedError: ErrTextTooLong,
+		},
 	}
-	err := store.CreateMessage(message)
-	assert.Error(t, err)
-	assert.Equal(t, ErrUserEmpty, err)
-	messages, err := store.GetMessages()
-	assert.NoError(t, err)
-	assert.Empty(t, messages)
-}
 
-func TestMemoryStore_CreateMessage_Invalid_NoText(t *testing.T) {
-	store := NewMemoryStore()
-	message := &Message{
-		User: "testuser",
-		Text: "", // Invalid text
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			store := NewMemoryStore()
+			err := store.CreateMessage(tc.inputMessage)
+			assert.Error(t, err)
+			assert.Equal(t, tc.expectedError, err)
+		})
 	}
-	err := store.CreateMessage(message)
-	assert.Error(t, err)
-	assert.Equal(t, ErrTextEmpty, err)
-	messages, err := store.GetMessages()
-	assert.NoError(t, err)
-	assert.Empty(t, messages)
-}
-
-func TestMemoryStore_CreateMessage_Invalid_TextTooLong(t *testing.T) {
-	store := NewMemoryStore()
-	longText := "a" // Create a long text exceeding 500 characters
-	for range 501 {
-		longText += "a"
-	}
-	message := &Message{
-		User: "testuser",
-		Text: longText,
-	}
-	err := store.CreateMessage(message)
-	assert.Error(t, err)
-	assert.Equal(t, ErrTextTooLong, err)
-	messages, err := store.GetMessages()
-	assert.NoError(t, err)
-	assert.Empty(t, messages)
 }
 
 func TestMemoryStore_UpdateMessage_Valid(t *testing.T) {
@@ -115,22 +103,7 @@ func TestMemoryStore_UpdateMessage_Valid(t *testing.T) {
 	assert.Equal(t, updatedMessage.Text, messages[0].Text)
 }
 
-func TestMemoryStore_UpdateMessage_NotFound(t *testing.T) {
-	store := NewMemoryStore()
-	updatedMessage := &Message{
-		ID:   uuid.New(), // Non-existent ID
-		User: "testuser",
-		Text: "updated text",
-	}
-	err := store.UpdateMessage(updatedMessage.ID.String(), updatedMessage)
-	assert.Error(t, err)
-	assert.Equal(t, ErrMessageNotFound, err)
-	messages, err := store.GetMessages()
-	assert.NoError(t, err)
-	assert.Empty(t, messages)
-}
-
-func TestMemoryStore_UpdateMessage_UserEmpty(t *testing.T) {
+func TestMemoryStore_UpdateMessage_Validation(t *testing.T) {
 	store := NewMemoryStore()
 	message := &Message{
 		User: "testuser",
@@ -139,37 +112,50 @@ func TestMemoryStore_UpdateMessage_UserEmpty(t *testing.T) {
 	err := store.CreateMessage(message)
 	assert.NoError(t, err)
 	originalID := message.ID
-	updatedMessage := &Message{
-		ID:   originalID,
-		User: "",
-		Text: "updated text",
-	}
-	err = store.UpdateMessage(originalID.String(), updatedMessage)
-	assert.Error(t, err)
-	assert.Equal(t, ErrUserEmpty, err)
-	messages, err := store.GetMessages()
-	assert.NoError(t, err)
-	assert.Len(t, messages, 1)
-	assert.Equal(t, message.User, messages[0].User)
-	assert.Equal(t, message.Text, messages[0].Text)
-}
 
-func TestMemoryStore_UpdateMessage_Invalid_TextTooLong(t *testing.T) {
-	store := NewMemoryStore()
-	longText := "a" // Create a long text exceeding 500 characters
-	for range 501 {
-		longText += "a"
+	testCases := []struct {
+		name          string
+		id            string
+		inputMessage  *Message
+		expectedError error
+	}{
+		{
+			name:          "Invalid_NotFound",
+			id:            "non-existent-id",
+			inputMessage:  &Message{User: "testuser", Text: "updated text"},
+			expectedError: ErrMessageNotFound,
+		},
+		{
+			name:          "Invalid_NoUser",
+			id:            originalID.String(),
+			inputMessage:  &Message{User: "", Text: "updated text"},
+			expectedError: ErrUserEmpty,
+		},
+		{
+			name:          "Invalid_NoText",
+			id:            originalID.String(),
+			inputMessage:  &Message{User: "testuser", Text: ""},
+			expectedError: ErrTextEmpty,
+		},
+		{
+			name:          "Invalid_TextTooLong",
+			id:            originalID.String(),
+			inputMessage:  &Message{User: "testuser", Text: strings.Repeat("a", 501)},
+			expectedError: ErrTextTooLong,
+		},
 	}
-	message := &Message{
-		User: "testuser",
-		Text: longText,
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			store := NewMemoryStore()
+			err := store.UpdateMessage(tc.id, tc.inputMessage)
+			assert.Error(t, err)
+			assert.Equal(t, tc.expectedError, err)
+			messages, err := store.GetMessages()
+			assert.NoError(t, err)
+			assert.Empty(t, messages)
+		})
 	}
-	err := store.CreateMessage(message)
-	assert.Error(t, err)
-	assert.Equal(t, ErrTextTooLong, err)
-	messages, err := store.GetMessages()
-	assert.NoError(t, err)
-	assert.Empty(t, messages)
 }
 
 func TestMemoryStore_DeleteMessage_Valid(t *testing.T) {
