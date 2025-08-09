@@ -3,14 +3,8 @@ package message
 import (
 	"errors"
 	"net/http"
-
-	"example-message-api/types"
-
 	"github.com/gin-gonic/gin"
 )
-
-type Message = types.Message
-type MessageStore = types.MessageStore
 
 type MessageHandler struct {
 	Store MessageStore
@@ -35,7 +29,7 @@ func (h *MessageHandler) GetMessage(c *gin.Context) {
 	id := c.Param("id")
 	message, err := h.Store.GetMessage(id)
 	if err != nil {
-		if errors.Is(err, types.ErrMessageNotFound) {
+		if errors.Is(err, ErrMessageNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		} else {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -53,7 +47,7 @@ func (h *MessageHandler) CreateMessage(c *gin.Context) {
 	}
 
 	if err := h.Store.CreateMessage(&message); err != nil {
-		if errors.Is(err, types.ErrUserEmpty) || errors.Is(err, types.ErrTextEmpty) || errors.Is(err, types.ErrTextTooLong) {
+		if errors.Is(err, ErrUserEmpty) || errors.Is(err, ErrTextEmpty) || errors.Is(err, ErrTextTooLong) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
@@ -74,7 +68,7 @@ func (h *MessageHandler) UpdateMessage(c *gin.Context) {
 	}
 
 	if err := h.Store.UpdateMessage(id, &message); err != nil {
-		if errors.Is(err, types.ErrMessageNotFound) {
+		if errors.Is(err, ErrMessageNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			return
 		} else {
@@ -89,7 +83,7 @@ func (h *MessageHandler) UpdateMessage(c *gin.Context) {
 func (h *MessageHandler) DeleteMessage(c *gin.Context) {
 	id := c.Param("id")
 	if err := h.Store.DeleteMessage(id); err != nil {
-		if errors.Is(err, types.ErrMessageNotFound) {
+		if errors.Is(err, ErrMessageNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			return
 		} else {

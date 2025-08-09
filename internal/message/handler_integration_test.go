@@ -1,8 +1,7 @@
-package services
+package message
 
 import (
 	"encoding/json"
-	"example-message-api/types"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -13,7 +12,7 @@ import (
 )
 
 func SetUpTest() (*MessageHandler, error) {
-	store := types.NewMemoryStore()
+	store := NewMemoryStore()
 	handler := NewMessageHandler(store)
 	return handler, nil
 }
@@ -27,7 +26,7 @@ func TestHandler_GetMessages_Empty(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.True(t, strings.HasPrefix(w.Header().Get("Content-Type"), "application/json"))
 
-	var resp []types.Message
+	var resp []Message
 	err := json.Unmarshal(w.Body.Bytes(), &resp)
 	assert.NoError(t, err)
 	assert.Empty(t, resp)
@@ -36,7 +35,7 @@ func TestHandler_GetMessages_Empty(t *testing.T) {
 func TestHandler_GetMessages_NotEmpty(t *testing.T) {
 	handler, _ := SetUpTest()
 
-	message := &types.Message{
+	message := &Message{
 		User: "testuser",
 		Text: "This is a test message",
 	}
@@ -49,7 +48,7 @@ func TestHandler_GetMessages_NotEmpty(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.True(t, strings.HasPrefix(w.Header().Get("Content-Type"), "application/json"))
 
-	var resp []types.Message
+	var resp []Message
 	err = json.Unmarshal(w.Body.Bytes(), &resp)
 	assert.NoError(t, err)
 	assert.Len(t, resp, 1)
@@ -61,7 +60,7 @@ func TestHandler_GetMessages_NotEmpty(t *testing.T) {
 func TestHandler_GetMessage_Valid(t *testing.T) {
 	handler, _ := SetUpTest()
 
-	message := &types.Message{
+	message := &Message{
 		User: "testuser",
 		Text: "This is a test message",
 	}
@@ -75,7 +74,7 @@ func TestHandler_GetMessage_Valid(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.True(t, strings.HasPrefix(w.Header().Get("Content-Type"), "application/json"))
 
-	var resp types.Message
+	var resp Message
 	err = json.Unmarshal(w.Body.Bytes(), &resp)
 	assert.NoError(t, err)
 	assert.Equal(t, message.User, resp.User)
