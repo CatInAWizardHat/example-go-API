@@ -20,5 +20,5 @@ and access in the browser via
 ```localhost:8080/messages```
 
 TODO:
-[] Add Unit tests for handler
-[] Finish integration tests for handler
+- [ ] Add Unit tests for handler
+- [ ] Finish integration tests for handler
