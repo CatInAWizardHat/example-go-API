@@ -1,8 +1,7 @@
 package main
 
 import (
-	"example-message-api/services"
-	"example-message-api/types"
+	"example-message-api/internal/message"
 	"fmt"
 	"log"
 	"os"
