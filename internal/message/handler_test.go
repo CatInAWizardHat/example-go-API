@@ -57,7 +57,7 @@ func TestHandler_Unit_GetMessage_NotFound(t *testing.T) {
 	c, _ := gin.CreateTestContext(w)
 	c.Params = gin.Params{{Key: "id", Value: "some-non-existent-id"}}
 	handler.GetMessage(c)
-	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, http.StatusNotFound, w.Code)
 	assert.True(t, strings.HasPrefix(w.Header().Get("Content-Type"), "application/json"))
 
 	var resp map[string]string
