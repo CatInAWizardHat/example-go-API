@@ -1,7 +1,6 @@
 package message
 
 import (
-	"errors"
 	"sync"
 
 	"github.com/google/uuid"

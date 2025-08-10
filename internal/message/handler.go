@@ -2,8 +2,8 @@ package message
 
 import (
 	"errors"
-	"net/http"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type MessageHandler struct {

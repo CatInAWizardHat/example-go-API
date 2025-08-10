@@ -1,8 +1,8 @@
 package message
 
-import(
+import (
 	"errors"
-	"google/uuid"
+	"github.com/google/uuid"
 )
 
 var (
