@@ -17,7 +17,7 @@ func SetUpTest() (*MessageHandler, error) {
 	return handler, nil
 }
 
-func TestHandler_GetMessages_Empty(t *testing.T) {
+func TestHandler_Integration_GetMessages_Empty(t *testing.T) {
 	handler, _ := SetUpTest()
 
 	w := httptest.NewRecorder()
@@ -32,7 +32,7 @@ func TestHandler_GetMessages_Empty(t *testing.T) {
 	assert.Empty(t, resp)
 }
 
-func TestHandler_GetMessages_NotEmpty(t *testing.T) {
+func TestHandler_Integration_GetMessages_NotEmpty(t *testing.T) {
 	handler, _ := SetUpTest()
 
 	message := &Message{
@@ -57,7 +57,7 @@ func TestHandler_GetMessages_NotEmpty(t *testing.T) {
 	assert.Equal(t, message.ID, resp[0].ID)
 }
 
-func TestHandler_GetMessage_Valid(t *testing.T) {
+func TestHandler_Integration_GetMessage_Valid(t *testing.T) {
 	handler, _ := SetUpTest()
 
 	message := &Message{
@@ -82,7 +82,7 @@ func TestHandler_GetMessage_Valid(t *testing.T) {
 	assert.Equal(t, message.ID, resp.ID)
 }
 
-func TestHandler_GetMessage_NotFound(t *testing.T) {
+func TestHandler_Integration_GetMessage_NotFound(t *testing.T) {
 	handler, _ := SetUpTest()
 
 	w := httptest.NewRecorder()
