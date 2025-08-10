@@ -48,8 +48,7 @@ func TestHandler_Unit_GetMessage_Found(t *testing.T) {
 
 func TestHandler_Unit_GetMessage_NotFound(t *testing.T) {
 	mock := &MockMessageStore{
-		GetMessageResult: Message{},
-		GetMessageError:  nil,
+		GetMessageError:  ErrMessageNotFound,
 	}
 
 	handler := NewMessageHandler(mock)
