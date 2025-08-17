@@ -1,24 +1,17 @@
-package types
+package message
 
 import (
-	"errors"
 	"sync"
 
 	"github.com/google/uuid"
 )
 
-var (
-	ErrMessageNotFound = errors.New("message not found")
-	ErrUserEmpty       = errors.New("user cannot be empty")
-	ErrTextEmpty       = errors.New("text cannot be empty")
-	ErrTextTooLong     = errors.New("text cannot exceed 500 characters")
-)
-
-// Message struct
-type Message struct {
-	ID   uuid.UUID `json:"id"`
-	User string    `json:"user"`
-	Text string    `json:"text"`
+type MessageStore interface {
+	GetMessage(id string) (Message, error)
+	GetMessages() ([]Message, error)
+	CreateMessage(message *Message) error
+	UpdateMessage(id string, message *Message) error
+	DeleteMessage(id string) error
 }
 
 type MemoryStore struct {

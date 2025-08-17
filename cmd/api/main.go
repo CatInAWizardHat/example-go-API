@@ -1,8 +1,7 @@
 package main
 
 import (
-	"example-message-api/services"
-	"example-message-api/types"
+	"example-message-api/internal/message"
 	"fmt"
 	"log"
 	"os"
@@ -23,9 +22,9 @@ func main() {
 	// Generate hostname for Gin router
 	hostname := fmt.Sprintf("%s:%s", host, port)
 
-	messageDB := types.NewMemoryStore()
+	messageDB := message.NewMemoryStore()
 	// Create operator for the endpoints
-	messages := services.NewMessageHandler(messageDB)
+	messages := message.NewMessageHandler(messageDB)
 	// Create router
 	r := gin.Default()
 	r.GET("/messages", messages.GetMessages)
