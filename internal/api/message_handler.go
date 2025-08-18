@@ -44,6 +44,7 @@ func (h *MessageHandler) CreateMessage(c *gin.Context) {
 
 	if err := h.Store.CreateMessage(&msg); err != nil {
 		mapErrorToResponse(c, err)
+		return
 	}
 	successResponse(c, http.StatusOK, msg)
 }
