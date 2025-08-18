@@ -5,10 +5,23 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"net/http"
+	"time"
 )
 
 type UserHandler struct {
 	Store user.UserStore
+}
+
+type RegisterUserRequest struct {
+	Username string `json:"username" binding:"required"`
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding"required,min=8"`
+}
+
+type UserProfileResponse struct {
+	ID        uuid.UUID `json:"id"`
+	Username  string    `json:"username"`
+	CreatedAt time.Time `json:"createdAt"`
 }
 
 func NewUserHandler(store user.UserStore) *UserHandler {
