@@ -19,14 +19,20 @@ Or build into a container with
 
 ### User Endpoints:
 [GET] /users
+
 [GET] /users/:id
 
 ### Message Endpoints:
 [GET]    /messages
+
 [GET]    /messages/:id
+
 [POST]   /messages
+
 [PATCH]  /messages/:id
+
 [DELETE] /messages/:id
+
 
 TODO:
 - [ ] Finish defining user MemoryStore functions
