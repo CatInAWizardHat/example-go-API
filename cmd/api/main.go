@@ -2,38 +2,30 @@ package main
 
 import (
 	"example-message-api/internal/message"
+	"example-message-api/internal/user"
+	"example-message-api/internal/api"
 	"fmt"
 	"log"
 	"os"
-
-	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	// Load .env file to make it accessible
-	if err := godotenv.Load(); err != nil {
-		log.Fatalf("Error, failed to load .env: %s", err)
-	}
-
 	// Get environment variables
 	host := os.Getenv("HOST_IP")
 	port := os.Getenv("HOST_PORT")
+	if host == "" || port == "" {
+		log.Fatalf("Failed to load HOST or PORT from env")
+	}
+
 	// Generate hostname for Gin router
 	hostname := fmt.Sprintf("%s:%s", host, port)
 
 	messageDB := message.NewMemoryStore()
-	// Create operator for the endpoints
-	messages := message.NewMessageHandler(messageDB)
-	// Create router
-	r := gin.Default()
-	r.GET("/messages", messages.GetMessages)
-	r.GET("/messages/:id", messages.GetMessage)
-	r.POST("/messages", messages.CreateMessage)
-	r.PATCH("/messages/:id", messages.UpdateMessage)
-	r.DELETE("/messages/:id", messages.DeleteMessage)
+	userDB := user.NewMemoryStore()
 
-	if err := r.Run(hostname); err != nil {
+	server := api.NewServer(userDB, messageDB)
+
+	if err := server.Start(hostname); err != nil {
 		log.Fatalf("Error, failed to start server: %s", err)
 	}
 }
