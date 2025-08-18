@@ -1,10 +1,9 @@
 package api
 
 import (
-	"errors"
+	"example-message-api/internal/message"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"example-message-api/internal/message"
 )
 
 type MessageHandler struct {
@@ -20,24 +19,20 @@ func NewMessageHandler(store message.MessageStore) *MessageHandler {
 func (h *MessageHandler) GetMessages(c *gin.Context) {
 	messages, err := h.Store.GetMessages()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		mapErrorToResponse(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, messages)
+	successResponse(c, http.StatusOK, messages)
 }
 
 func (h *MessageHandler) GetMessage(c *gin.Context) {
 	id := c.Param("id")
 	msg, err := h.Store.GetMessage(id)
 	if err != nil {
-		if errors.Is(err, message.ErrMessageNotFound) {
-			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		}
+		mapErrorToResponse(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, msg)
+	successResponse(c, http.StatusOK, msg)
 }
 
 func (h *MessageHandler) CreateMessage(c *gin.Context) {
@@ -48,16 +43,9 @@ func (h *MessageHandler) CreateMessage(c *gin.Context) {
 	}
 
 	if err := h.Store.CreateMessage(&msg); err != nil {
-		if errors.Is(err, message.ErrUserEmpty) || errors.Is(err, message.ErrTextEmpty) || errors.Is(err, message.ErrTextTooLong) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-		// Handle other errors, such as database errors
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		mapErrorToResponse(c, err)
 	}
-
-	c.JSON(http.StatusCreated, msg)
+	successResponse(c, http.StatusOK, msg)
 }
 
 func (h *MessageHandler) UpdateMessage(c *gin.Context) {
@@ -69,29 +57,15 @@ func (h *MessageHandler) UpdateMessage(c *gin.Context) {
 	}
 
 	if err := h.Store.UpdateMessage(id, &msg); err != nil {
-		if errors.Is(err, message.ErrMessageNotFound) {
-			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-			return
-		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
+		mapErrorToResponse(c, err)
 	}
-
-	c.JSON(http.StatusOK, msg)
+	c.Status(http.StatusNoContent)
 }
 
 func (h *MessageHandler) DeleteMessage(c *gin.Context) {
 	id := c.Param("id")
 	if err := h.Store.DeleteMessage(id); err != nil {
-		if errors.Is(err, message.ErrMessageNotFound) {
-			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-			return
-		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
+		mapErrorToResponse(c, err)
 	}
-
 	c.Status(http.StatusNoContent)
 }

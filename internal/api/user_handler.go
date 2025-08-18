@@ -1,10 +1,9 @@
 package api
 
 import (
-	"errors"
+	"example-message-api/internal/user"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"example-message-api/internal/user"
 	"net/http"
 )
 
@@ -21,11 +20,10 @@ func NewUserHandler(store user.UserStore) *UserHandler {
 func (h *UserHandler) GetUsers(c *gin.Context) {
 	users, err := h.Store.GetUsers()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		mapErrorToResponse(c, err)
 		return
 	}
-
-	c.JSON(http.StatusOK, gin.H{"data": users})
+	successResponse(c, http.StatusOK, users)
 }
 
 func (h *UserHandler) GetUser(c *gin.Context) {
@@ -36,14 +34,7 @@ func (h *UserHandler) GetUser(c *gin.Context) {
 	}
 	usr, err := h.Store.GetUser(id)
 	if err != nil {
-		if errors.Is(err, user.ErrUserNotFound) {
-			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-			return
-		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
+		mapErrorToResponse(c, err)
 	}
-
-	c.JSON(http.StatusOK, gin.H{"data": usr})
+	successResponse(c, http.StatusOK, usr)
 }
