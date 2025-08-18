@@ -1,7 +1,8 @@
-package message
+package api
 
 import (
 	"encoding/json"
+	"example-message-api/internal/message"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	assert "github.com/stretchr/testify/assert"
@@ -12,10 +13,10 @@ import (
 )
 
 type MockMessageStore struct {
-	GetMessageResult Message
+	GetMessageResult message.Message
 	GetMessageError  error
 
-	GetMessagesResult []Message
+	GetMessagesResult []message.Message
 	GetMessagesError  error
 
 	CreateMessageError error
@@ -23,19 +24,19 @@ type MockMessageStore struct {
 	DeleteMessageError error
 }
 
-func (m *MockMessageStore) GetMessage(id string) (Message, error) {
+func (m *MockMessageStore) GetMessage(id string) (message.Message, error) {
 	return m.GetMessageResult, m.GetMessageError
 }
 
-func (m *MockMessageStore) GetMessages() ([]Message, error) {
+func (m *MockMessageStore) GetMessages() ([]message.Message, error) {
 	return m.GetMessagesResult, m.GetMessagesError
 }
 
-func (m *MockMessageStore) CreateMessage(message *Message) error {
+func (m *MockMessageStore) CreateMessage(message *message.Message) error {
 	return m.CreateMessageError
 }
 
-func (m *MockMessageStore) UpdateMessage(id string, message *Message) error {
+func (m *MockMessageStore) UpdateMessage(id string, message *message.Message) error {
 	return m.UpdateMessageError
 }
 
@@ -45,14 +46,14 @@ func (m *MockMessageStore) DeleteMessage(id string) error {
 
 func TestHandler_Unit_GetMessage_Found(t *testing.T) {
 	id := uuid.New()
-	message := Message{
-		id,
-		"testuser",
-		"testtesttest",
+	msg := message.Message{
+		ID:   id,
+		User: "testuser",
+		Text: "testtesttest",
 	}
 
 	mock := &MockMessageStore{
-		GetMessageResult: message,
+		GetMessageResult: msg,
 		GetMessageError:  nil,
 	}
 
@@ -65,17 +66,17 @@ func TestHandler_Unit_GetMessage_Found(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.True(t, strings.HasPrefix(w.Header().Get("Content-Type"), "application/json"))
 
-	var resp Message
+	var resp message.Message
 	err := json.Unmarshal(w.Body.Bytes(), &resp)
 	assert.NoError(t, err)
-	assert.Equal(t, message.User, resp.User)
-	assert.Equal(t, message.Text, resp.Text)
-	assert.Equal(t, message.ID, resp.ID)
+	assert.Equal(t, msg.User, resp.User)
+	assert.Equal(t, msg.Text, resp.Text)
+	assert.Equal(t, msg.ID, resp.ID)
 }
 
 func TestHandler_Unit_GetMessage_NotFound(t *testing.T) {
 	mock := &MockMessageStore{
-		GetMessageError: ErrMessageNotFound,
+		GetMessageError: message.ErrMessageNotFound,
 	}
 
 	handler := NewMessageHandler(mock)

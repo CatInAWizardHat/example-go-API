@@ -1,16 +1,17 @@
-package message
+package api
 
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"example-message-api/internal/message"
 )
 
 type MessageHandler struct {
-	Store MessageStore
+	Store message.MessageStore
 }
 
-func NewMessageHandler(store MessageStore) *MessageHandler {
+func NewMessageHandler(store message.MessageStore) *MessageHandler {
 	return &MessageHandler{
 		Store: store,
 	}
@@ -27,27 +28,27 @@ func (h *MessageHandler) GetMessages(c *gin.Context) {
 
 func (h *MessageHandler) GetMessage(c *gin.Context) {
 	id := c.Param("id")
-	message, err := h.Store.GetMessage(id)
+	msg, err := h.Store.GetMessage(id)
 	if err != nil {
-		if errors.Is(err, ErrMessageNotFound) {
+		if errors.Is(err, message.ErrMessageNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		} else {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		}
 		return
 	}
-	c.JSON(http.StatusOK, message)
+	c.JSON(http.StatusOK, msg)
 }
 
 func (h *MessageHandler) CreateMessage(c *gin.Context) {
-	var message Message
-	if err := c.ShouldBindJSON(&message); err != nil {
+	var msg message.Message
+	if err := c.ShouldBindJSON(&msg); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := h.Store.CreateMessage(&message); err != nil {
-		if errors.Is(err, ErrUserEmpty) || errors.Is(err, ErrTextEmpty) || errors.Is(err, ErrTextTooLong) {
+	if err := h.Store.CreateMessage(&msg); err != nil {
+		if errors.Is(err, message.ErrUserEmpty) || errors.Is(err, message.ErrTextEmpty) || errors.Is(err, message.ErrTextTooLong) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
@@ -56,19 +57,19 @@ func (h *MessageHandler) CreateMessage(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, message)
+	c.JSON(http.StatusCreated, msg)
 }
 
 func (h *MessageHandler) UpdateMessage(c *gin.Context) {
 	id := c.Param("id")
-	var message Message
-	if err := c.ShouldBindJSON(&message); err != nil {
+	var msg message.Message
+	if err := c.ShouldBindJSON(&msg); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := h.Store.UpdateMessage(id, &message); err != nil {
-		if errors.Is(err, ErrMessageNotFound) {
+	if err := h.Store.UpdateMessage(id, &msg); err != nil {
+		if errors.Is(err, message.ErrMessageNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			return
 		} else {
@@ -77,13 +78,13 @@ func (h *MessageHandler) UpdateMessage(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusOK, message)
+	c.JSON(http.StatusOK, msg)
 }
 
 func (h *MessageHandler) DeleteMessage(c *gin.Context) {
 	id := c.Param("id")
 	if err := h.Store.DeleteMessage(id); err != nil {
-		if errors.Is(err, ErrMessageNotFound) {
+		if errors.Is(err, message.ErrMessageNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			return
 		} else {
