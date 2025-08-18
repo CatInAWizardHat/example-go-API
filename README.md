@@ -15,10 +15,25 @@ Or build into a container with
 
 ```docker compose up --build```
 
-and access in the browser via 
+## Endpoints:
 
-```localhost:8080/messages```
+### User Endpoints:
+[GET] /users
+[GET] /users/:id
+
+### Message Endpoints:
+[GET]    /messages
+[GET]    /messages/:id
+[POST]   /messages
+[PATCH]  /messages/:id
+[DELETE] /messages/:id
 
 TODO:
-- [ ] Add Unit tests for handler
-- [ ] Finish integration tests for handler
+- [ ] Finish defining user MemoryStore functions
+- [ ] Finish defining user_handler endpoints
+- [ ] Implement basic auth flow
+- [ ] Add Unit tests for message_handler
+- [ ] Finish integration tests for message_handler
+- [ ] Add Unit tests for user MemoryStore
+- [ ] Add Unit tests for user_handler endpoints
+- [ ] Add integration tests for user_handler
