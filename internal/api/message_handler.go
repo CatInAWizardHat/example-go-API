@@ -59,6 +59,7 @@ func (h *MessageHandler) UpdateMessage(c *gin.Context) {
 
 	if err := h.Store.UpdateMessage(id, &msg); err != nil {
 		mapErrorToResponse(c, err)
+		return
 	}
 	c.Status(http.StatusNoContent)
 }
@@ -67,6 +68,7 @@ func (h *MessageHandler) DeleteMessage(c *gin.Context) {
 	id := c.Param("id")
 	if err := h.Store.DeleteMessage(id); err != nil {
 		mapErrorToResponse(c, err)
+		return
 	}
 	c.Status(http.StatusNoContent)
 }
