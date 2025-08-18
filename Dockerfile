@@ -17,10 +17,10 @@ RUN GOOS=linux GOARCH=amd64 go build -o server ./cmd/api
 
 FROM scratch
 
-COPY --from=builder /server/server /server/.env .
+COPY --from=builder /server/server .
 
 # Pick port
 EXPOSE 8080
 
 # Start
-CMD ["./server"]
+CMD ["/server"]

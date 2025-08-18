@@ -7,18 +7,16 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	// Load .env file to make it accessible
-	if err := godotenv.Load(); err != nil {
-		log.Fatalf("Error, failed to load .env: %s", err)
-	}
-
 	// Get environment variables
 	host := os.Getenv("HOST_IP")
 	port := os.Getenv("HOST_PORT")
+	if host == "" || port == "" {
+		log.Fatalf("Failed to load HOST or PORT from env")
+	}
+
 	// Generate hostname for Gin router
 	hostname := fmt.Sprintf("%s:%s", host, port)
 
