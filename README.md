@@ -34,7 +34,7 @@ Or build into a container with
 [DELETE] /messages/:id
 
 
-TODO:
+## TODO:
 - [ ] Finish defining user MemoryStore functions
 - [ ] Finish defining user_handler endpoints
 - [ ] Implement basic auth flow
